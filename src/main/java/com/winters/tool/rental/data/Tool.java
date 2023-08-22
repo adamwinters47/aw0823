@@ -2,6 +2,9 @@ package com.winters.tool.rental.data;
 
 import lombok.Builder;
 import lombok.Data;
+
+import java.math.BigDecimal;
+
 @Builder
 public @Data class Tool {
     Type type;
@@ -9,15 +12,15 @@ public @Data class Tool {
 
     public enum Type {
         // TODO: Add 3rd thing here for daily charge
-        CHAINSAW("CHN", "CHAINSAW", 1.49), // 1.49
-        LADDER("LDR", "LADDER", 1.99), // 1.99
-        JACKHAMMER("JAK", "JACKHAMMER", 2.99); // 2.99
+        CHAINSAW("CHN", "CHAINSAW", BigDecimal.valueOf(1.49)),
+        LADDER("LDR", "LADDER", BigDecimal.valueOf(1.99)),
+        JACKHAMMER("JAK", "JACKHAMMER", BigDecimal.valueOf(2.99));
 
         private final String fullName;
         private final String typeCode;
-        private final double dailyCharge;
+        private final BigDecimal dailyCharge;
 
-        Type(String typeCode, String fullName, double dailyCharge) {
+        Type(String typeCode, String fullName, BigDecimal dailyCharge) {
             this.typeCode = typeCode;
             this.fullName = fullName;
             this.dailyCharge = dailyCharge;
@@ -29,7 +32,7 @@ public @Data class Tool {
         public String getFullName() {
             return fullName;
         }
-        public double getDailyCharge() {
+        public BigDecimal getDailyCharge() {
             return dailyCharge;
         }
         public static Type findByTypeCode(String typeCode) {
