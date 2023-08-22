@@ -1,23 +1,26 @@
 package com.winters.tool.rental.data;
 
+import lombok.Builder;
 import lombok.Data;
-
+@Builder
 public @Data class Tool {
     Type type;
     Brand brand;
-    String code;
 
-    enum Type {
-        CHAINSAW("CHN", "CHAINSAW"),
-        LADDER("LDR", "LADDER"),
-        JACKHAMMER("JAK", "JACKHAMMER");
+    public enum Type {
+        // TODO: Add 3rd thing here for daily charge
+        CHAINSAW("CHN", "CHAINSAW", 1.49), // 1.49
+        LADDER("LDR", "LADDER", 1.99), // 1.99
+        JACKHAMMER("JAK", "JACKHAMMER", 2.99); // 2.99
 
         private final String fullName;
         private final String typeCode;
+        private final double dailyCharge;
 
-        Type(String typeCode, String fullName) {
+        Type(String typeCode, String fullName, double dailyCharge) {
             this.typeCode = typeCode;
             this.fullName = fullName;
+            this.dailyCharge = dailyCharge;
         }
 
         public String getTypeCode() {
@@ -26,13 +29,37 @@ public @Data class Tool {
         public String getFullName() {
             return fullName;
         }
+        public double getDailyCharge() {
+            return dailyCharge;
+        }
+        public static Type findByTypeCode(String typeCode) {
+            Type result = null;
+            for(Type type: values()) {
+                if(type.getTypeCode().equalsIgnoreCase(typeCode)) {
+                    result = type;
+                    break;
+                }
+            }
+            return result;
+        }
     }
 
-    enum Brand {
+    public enum Brand {
         STIHL,
         WERNER,
         DEWALT,
-        RIDGID
+        RIDGID;
+
+        public static Brand findByBrandCode(char brandCode) {
+            Brand result = null;
+            for(Brand brand : values()) {
+                if(brand.name().charAt(0) == brandCode) {
+                    result = brand;
+                    break;
+                }
+            }
+            return result;
+        }
     }
 
     /**
