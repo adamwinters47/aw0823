@@ -23,6 +23,8 @@ public @Data class RentalAgreement {
     BigDecimal dailyRentalCharge;
     // Count of chargeable days, from day after checkout through & including due date, excluding "no charge" days as specified by the tool type
     int chargeDays;
+    // Count of days NOT charging for rental
+    int discountDays;
     // Gross rental amount before discounts
     BigDecimal preDiscountCharge;
     // Discount amount represented as a whole number - i.e. 20 = 20% discount
@@ -41,7 +43,7 @@ public @Data class RentalAgreement {
         return "Tool Data: " + System.lineSeparator()
                 + "\tType: " + formattedToolName + ", Brand: " + tool.getBrand() + ", Code: " + tool.getCode() + System.lineSeparator()
                 + "Rental data: " + System.lineSeparator()
-                + "\tRental Days: " + getNumDaysRented() + ", Checkout Date: " + dateFormat.format(getCheckOutDate()) + ", Return Date: " + dateFormat.format(getDueDate()) + System.lineSeparator()
+                + "\tRental Days: " + getNumDaysRented() + ", Discount Days: " + discountDays + ", Checkout Date: " + dateFormat.format(getCheckOutDate()) + ", Return Date: " + dateFormat.format(getDueDate()) + System.lineSeparator()
                 + "Charge Data: " + System.lineSeparator()
                 + "\tDaily Charge: " + usdFormat.format(getDailyRentalCharge()) + ", Days Charged: " + getChargeDays() + System.lineSeparator()
                 + "\tPre Discount Total: " + usdFormat.format(getPreDiscountCharge()) + ", Discount Percentage: " + getDiscountPercent() + "%, Discount Amount: " + usdFormat.format(getDiscountAmount()) + System.lineSeparator()

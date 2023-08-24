@@ -29,11 +29,21 @@ public final class RentalUtil {
                 .toLocalDate();
     }
 
+    /**
+     * In the case where a renter is going to be renting on the extreme long term (greater than a year),
+     * we want to make sure that the holiday discount is given on each instance of the present holiday,
+     * not just the first or last
+     *
+     * @param firstChargeDate - The first possible date we will charge the renter
+     * @param dueDate         - Date the item is due back, which is a normally charged day
+     * @return total number of days that meet the given criteria
+     */
     public static int calculateNumHolidays(Date firstChargeDate, Date dueDate) {
         Calendar checkoutDateCalendar = RentalUtil.convertDateToCalendar(firstChargeDate);
+        Calendar dueDateCalendar = RentalUtil.convertDateToCalendar(dueDate);
 
         int startingYear = checkoutDateCalendar.get(Calendar.YEAR);
-        int endingYear = checkoutDateCalendar.get(Calendar.YEAR);
+        int endingYear = dueDateCalendar.get(Calendar.YEAR);
         AtomicInteger numHolidays = new AtomicInteger(0);
 
         IntStream.rangeClosed(startingYear, endingYear).forEach(year -> {
@@ -54,8 +64,8 @@ public final class RentalUtil {
      * Because 4th of July can fall on the weekend, we only want the actual observed date of the holiday.
      * If the holiday is on Saturday, Friday becomes the observed date. If it's on Sunday, Monday becomes the observed date.
      *
-     * @param year The year in which we are checking
-     * @return Date that indicates the observed holiday
+     * @param year - The year in which we are checking
+     * @return Date that indicates the observed holiday for the given year
      */
     private static Date calculateObservedIndependenceDayForYear(int year) {
         GregorianCalendar c = new GregorianCalendar(year, Calendar.JULY, 4);
@@ -73,7 +83,7 @@ public final class RentalUtil {
      * an easy-to-use API to calculate the first Monday of a given month + year, so we'll use that here.
      *
      * @param year - the year in which we are calculating the holiday
-     * @return
+     * @return Date that indicates labor day for the given year
      */
     private static Date calculateLaborDayForYear(int year) {
         Calendar c = Calendar.getInstance();
@@ -89,6 +99,11 @@ public final class RentalUtil {
         return (dateToCheck.after(startDate) && dateToCheck.before(endDate)) || dateToCheck.equals(startDate) || dateToCheck.equals(endDate);
     }
 
+    /**
+     * @param firstChargeDate - The first possible date we will charge the renter
+     * @param dueDate         - Date the item is due back, which is a normally charged day
+     * @return total number of days that meet the given criteria
+     */
     public static int calculateNumWeekendDays(Date firstChargeDate, Date dueDate) {
         AtomicInteger numWeekendDays = new AtomicInteger();
         LocalDate start = RentalUtil.convertDateToLocalDate(firstChargeDate);
@@ -101,6 +116,14 @@ public final class RentalUtil {
         return numWeekendDays.get();
     }
 
+    /**
+     * With the currently present products, we are always charging on weekdays, but a time
+     * may come when a new tool is exempt on weekdays, so we already have that in place.
+     *
+     * @param firstChargeDate - The first possible date we will charge the renter
+     * @param dueDate         - Date the item is due back, which is a normally charged day
+     * @return total number of days that meet the given criteria
+     */
     public static int calculateNumWeekDays(Date firstChargeDate, Date dueDate) {
         AtomicInteger numWeekendDays = new AtomicInteger();
         LocalDate start = RentalUtil.convertDateToLocalDate(firstChargeDate);

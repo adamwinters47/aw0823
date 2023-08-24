@@ -22,7 +22,7 @@ public class RentalService {
         List<String> validationErrors = validateRentalRequest(req);
         // if list is not empty, throw exception with info
         if (!validationErrors.isEmpty()) {
-            throw new Exception("Rental Request is not valid. Please fix the following errors: " + String.join(", ", validationErrors));
+            throw new Exception("Rental Request is not valid. Please fix the following error(s): " + String.join(", ", validationErrors));
         }
         Tool rentedTool = RentalUtil.assembleToolFromToolCode(req.getToolCode());
         Date dueDate = deriveRentalDueDate(req.getCheckoutDate(), req.getNumDaysToRent());
@@ -37,27 +37,23 @@ public class RentalService {
 
         BigDecimal discountAmount = preDiscountCharge.multiply(discountPercentageAsDecimal).setScale(2, RoundingMode.HALF_UP);
 
-        RentalAgreement agreement = RentalAgreement.builder().tool(rentedTool).numDaysRented(req.getNumDaysToRent()).checkOutDate(req.getCheckoutDate()).dueDate(dueDate).dailyRentalCharge(dailyCharge).chargeDays(chargeDays).preDiscountCharge(preDiscountCharge).discountPercent(req.getDiscountPercent()).discountAmount(discountAmount).finalCharge(preDiscountCharge.subtract(discountAmount)).build();
+        RentalAgreement agreement = RentalAgreement.builder()
+                .tool(rentedTool)
+                .numDaysRented(req.getNumDaysToRent())
+                .checkOutDate(req.getCheckoutDate())
+                .dueDate(dueDate)
+                .dailyRentalCharge(dailyCharge)
+                .chargeDays(chargeDays)
+                .discountDays(totalDiscountDays)
+                .preDiscountCharge(preDiscountCharge)
+                .discountPercent(req.getDiscountPercent())
+                .discountAmount(discountAmount)
+                .finalCharge(preDiscountCharge.subtract(discountAmount))
+                .build();
 
         System.out.println(agreement);
 
         return agreement;
-    }
-
-    private int calculateNumDiscountDays(Tool.Type toolType, Date checkoutDate, Date dueDate) {
-        Calendar firstChargeDay = RentalUtil.convertDateToCalendar(checkoutDate);
-        firstChargeDay.add(Calendar.DATE, 1);
-        Date firstChargeDate = firstChargeDay.getTime();
-        int numHolidaysToDiscount = toolType.isChargedOnHolidays() ? 0 : RentalUtil.calculateNumHolidays(firstChargeDate, dueDate);
-        int numWeekendDaysToDiscount = toolType.isChargedOnWeekends() ? 0 : RentalUtil.calculateNumWeekendDays(firstChargeDate, dueDate);
-        int numWeekDaysToDiscount = toolType.isChargedOnWeekdays() ? 0 : RentalUtil.calculateNumWeekDays(firstChargeDate, dueDate);
-        return numHolidaysToDiscount + numWeekendDaysToDiscount + numWeekDaysToDiscount;
-    }
-
-    private Date deriveRentalDueDate(Date checkoutDate, int numDaysToRent) {
-        Calendar c = RentalUtil.convertDateToCalendar(checkoutDate);
-        c.add(Calendar.DATE, numDaysToRent);
-        return c.getTime();
     }
 
     /**
@@ -83,13 +79,48 @@ public class RentalService {
             Tool tool = RentalUtil.assembleToolFromToolCode(req.getToolCode());
 
             if (tool.getType() == null) {
-                validationErrors.add("No Tool Type found for requested type. Ensure the Tool Code requested has a valid tool type for the first three characters. Request had a value of " + req.getToolCode());
+                validationErrors.add("No Tool Type found for requested type. Ensure the Tool Code requested has a " +
+                        "valid tool type for the first three characters. Request had a value of " + req.getToolCode());
             }
             if (tool.getBrand() == null) {
-                validationErrors.add("No Brand type found for the requested type. Ensure the Tool Code requested has a valid brand code for the last character. Request had a value of " + req.getToolCode());
+                validationErrors.add("No Brand type found for the requested type. Ensure the Tool Code requested has a " +
+                        "valid brand code for the last character. Request had a value of " + req.getToolCode());
             }
         }
         return validationErrors;
+    }
+
+    /**
+     * Converts to an easily manipulated calendar then adds our rental days to calculate the return date.
+     *
+     * @param checkoutDate  - First day of rental (NOT first day of rental charge)
+     * @param numDaysToRent
+     * @return the date the rental is due to be returned
+     */
+    private Date deriveRentalDueDate(Date checkoutDate, int numDaysToRent) {
+        Calendar c = RentalUtil.convertDateToCalendar(checkoutDate);
+        c.add(Calendar.DATE, numDaysToRent);
+        return c.getTime();
+    }
+
+    /**
+     * Function to get the total number of days within the rental period that we do NOT charge for the rental.
+     * Different types of tools charge on different days, so we need to check the type of tool to determine if we
+     * even need to provide the discount on the given type of day or not.
+     *
+     * @param toolType
+     * @param checkoutDate - First day of rental (NOT first day of rental charge)
+     * @param dueDate      - Last day of rental (this day is normally a charge, unless one of the below conditions is met for that day)
+     * @return
+     */
+    private int calculateNumDiscountDays(Tool.Type toolType, Date checkoutDate, Date dueDate) {
+        Calendar firstChargeDay = RentalUtil.convertDateToCalendar(checkoutDate);
+        firstChargeDay.add(Calendar.DATE, 1);
+        Date firstChargeDate = firstChargeDay.getTime();
+        int numHolidaysToDiscount = toolType.isChargedOnHolidays() ? 0 : RentalUtil.calculateNumHolidays(firstChargeDate, dueDate);
+        int numWeekendDaysToDiscount = toolType.isChargedOnWeekends() ? 0 : RentalUtil.calculateNumWeekendDays(firstChargeDate, dueDate);
+        int numWeekDaysToDiscount = toolType.isChargedOnWeekdays() ? 0 : RentalUtil.calculateNumWeekDays(firstChargeDate, dueDate);
+        return numHolidaysToDiscount + numWeekendDaysToDiscount + numWeekDaysToDiscount;
     }
 
 }

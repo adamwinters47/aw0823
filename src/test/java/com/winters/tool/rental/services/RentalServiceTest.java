@@ -129,8 +129,6 @@ class RentalServiceTest {
         assertRentalAgreement(req, agreement, expectedTool, expectedChargeDays);
     }
 
-    // TODO: Tests for the validation errors
-
     @Test
     void testInvalidNumDaysToRentFailure() {
         Date checkoutDate = new GregorianCalendar(2020, Calendar.JULY, 2).getTime();
@@ -216,6 +214,18 @@ class RentalServiceTest {
                     e.getMessage().contains("No Brand type found for the requested type. Ensure the Tool Code requested has a valid brand code for the last character. Request had a value of " + toolCode)
             );
         }
+    }
+
+    @Test
+    void testMultipleYearRentalChargesEachInstanceOfHoliday() throws Exception {
+        Date checkoutDate = new GregorianCalendar(2020, Calendar.JULY, 2).getTime();
+        String toolCode = "LADW";
+        int numDaysToRent = 700;
+        int discountPercent = 10;
+        RentalRequest req = assembleRentalRequest(checkoutDate, toolCode, numDaysToRent, discountPercent);
+        RentalAgreement agreement = rentalService.checkout(req);
+        // 700 Days puts us at two years total, so we should have two discounted labor days & two discounted Independence days
+        assertEquals(4, agreement.getDiscountDays());
     }
 
     private void assertRentalAgreement(RentalRequest req, RentalAgreement agreement, Tool expectedTool, int expectedChargeDays) {

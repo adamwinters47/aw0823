@@ -17,7 +17,9 @@ public @Data class Tool {
     public enum Type {
         CHAINSAW("CHN", "CHAINSAW", BigDecimal.valueOf(1.49), true, false, true),
         LADDER("LAD", "LADDER", BigDecimal.valueOf(1.99), true, true, false),
-        JACKHAMMER("JAK", "JACKHAMMER", BigDecimal.valueOf(2.99), true, false, false);
+        JACKHAMMER("JAK", "JACKHAMMER", BigDecimal.valueOf(2.99), true, false, false),
+        // Test tool for validating isChargedOnWeekdays = false behavior, costs about tree fiddy
+        WEEKDAY_EXEMPT("WEE", "WEEKDAYEXEMPT", BigDecimal.valueOf(3.50), false, true, true);
 
         private final String typeCode;
         private final String fullName;
