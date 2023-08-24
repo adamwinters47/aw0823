@@ -228,6 +228,20 @@ class RentalServiceTest {
         assertEquals(4, agreement.getDiscountDays());
     }
 
+    @Test
+    void testNoWeekdayChargeRental() throws Exception {
+        Date checkoutDate = new GregorianCalendar(2023, Calendar.AUGUST, 21).getTime();
+        String toolCode = "WEEW";
+        int numDaysToRent = 9;
+        int discountPercent = 0;
+
+        RentalRequest req = assembleRentalRequest(checkoutDate, toolCode, numDaysToRent, discountPercent);
+        RentalAgreement agreement = rentalService.checkout(req);
+
+        // We are starting on a Monday & continuing through to the following mid-week. We should only be charged for Saturday & Sunday
+        assertEquals(2, agreement.getChargeDays());
+    }
+
     private void assertRentalAgreement(RentalRequest req, RentalAgreement agreement, Tool expectedTool, int expectedChargeDays) {
         Tool agreementTool = agreement.getTool();
         BigDecimal expectedDailyCharge = expectedTool.getType().getDailyCharge();
