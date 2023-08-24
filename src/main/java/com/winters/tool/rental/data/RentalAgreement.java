@@ -42,8 +42,8 @@ public @Data class RentalAgreement {
                 + "\tType: " + formattedToolName + ", Brand: " + tool.getBrand() + ", Code: " + tool.getCode() + System.lineSeparator()
                 + "Rental data: " + System.lineSeparator()
                 + "\tRental Days: " + getNumDaysRented() + ", Checkout Date: " + dateFormat.format(getCheckOutDate()) + ", Return Date: " + dateFormat.format(getDueDate()) + System.lineSeparator()
-                + "\tDaily Charge: " + usdFormat.format(getDailyRentalCharge()) + ", Days Charged: " + getChargeDays() + System.lineSeparator()
                 + "Charge Data: " + System.lineSeparator()
+                + "\tDaily Charge: " + usdFormat.format(getDailyRentalCharge()) + ", Days Charged: " + getChargeDays() + System.lineSeparator()
                 + "\tPre Discount Total: " + usdFormat.format(getPreDiscountCharge()) + ", Discount Percentage: " + getDiscountPercent() + "%, Discount Amount: " + usdFormat.format(getDiscountAmount()) + System.lineSeparator()
                 + "__________________________________________________________" + System.lineSeparator()
                 + "Total: " + usdFormat.format(getFinalCharge());

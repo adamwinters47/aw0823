@@ -15,7 +15,6 @@ public @Data class Tool {
     @AllArgsConstructor
     @Getter
     public enum Type {
-        // TODO: Add 3rd thing here for daily charge
         CHAINSAW("CHN", "CHAINSAW", BigDecimal.valueOf(1.49), true, false, true),
         LADDER("LAD", "LADDER", BigDecimal.valueOf(1.99), true, true, false),
         JACKHAMMER("JAK", "JACKHAMMER", BigDecimal.valueOf(2.99), true, false, false);

@@ -143,7 +143,7 @@ class RentalServiceTest {
             rentalService.checkout(req);
         } catch (Exception e) {
             assertTrue(
-                    e.getMessage().contains("Number of rental days must be ast least one. Request had a value of " + numDaysToRent)
+                    e.getMessage().contains("Number of rental days must be at least one. Request had a value of " + numDaysToRent)
             );
         }
     }
