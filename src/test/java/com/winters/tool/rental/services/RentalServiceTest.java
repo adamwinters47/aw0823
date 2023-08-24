@@ -1,6 +1,6 @@
 package com.winters.tool.rental.services;
 
-import com.winters.tool.rental.Util.RentalUtil;
+import com.winters.tool.rental.util.RentalUtil;
 import com.winters.tool.rental.data.RentalAgreement;
 import com.winters.tool.rental.data.RentalRequest;
 import com.winters.tool.rental.data.Tool;

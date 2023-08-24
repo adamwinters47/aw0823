@@ -1,4 +1,4 @@
-package com.winters.tool.rental.Util;
+package com.winters.tool.rental.util;
 
 import com.winters.tool.rental.data.Tool;
 
