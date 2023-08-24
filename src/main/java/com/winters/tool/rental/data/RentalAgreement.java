@@ -4,18 +4,24 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 @Builder
 public @Data class RentalAgreement {
     Tool tool;
     // Total number of days the tool is being rented - should always be at least one
     int numDaysRented;
+    // The date in which the rental is beginning. This day is not charged to the renter.
     Date checkOutDate;
     // The date in which the rental is due to be returned. A rental is not late until we have reached at least one day AFTER this due date
     Date dueDate;
+    // Daily cost of the piece of equipment being rented
     BigDecimal dailyRentalCharge;
-    // A total number of the days when a charge is eligible - If there is a 5-day rental, but one day is a holiday, this value would be 4
+    // Count of chargeable days, from day after checkout through & including due date, excluding "no charge" days as specified by the tool type
     int chargeDays;
     // Gross rental amount before discounts
     BigDecimal preDiscountCharge;
@@ -28,24 +34,18 @@ public @Data class RentalAgreement {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Tool Data: " + System.lineSeparator()
-                + "Type: " + tool.getType().getFullName() + ", Brand: " + tool.getBrand() + ", Code: " + tool.getCode() + System.lineSeparator()
-                + "Rental data: " + System.lineSeparator()
-                + "Rental Days: " + getNumDaysRented() + ", Checkout Date: " + getCheckOutDate() + ", Return Date: " + getDueDate() + System.lineSeparator()
-                + "Daily Charge: " + tool.getType().getDailyCharge() + ", Days Charged: " + getChargeDays() + System.lineSeparator()
-                + "Charge Data: " + System.lineSeparator()
-                + "Pre Discount Total: " + getPreDiscountCharge() + ", Discount Percentage: " + getDiscountPercent() + ", Discount Amount: " + getDiscountAmount() + System.lineSeparator()
-                + "__________________________________________________________" + System.lineSeparator()
-                + "Total: " + getFinalCharge());
+        DateFormat dateFormat = new SimpleDateFormat("MM/dd/yy");
+        String toolName = tool.getType().getFullName();
+        String formattedToolName = toolName.substring(0, 1).toUpperCase() + toolName.substring(1).toLowerCase();
+        NumberFormat usdFormat = NumberFormat.getCurrencyInstance(Locale.US);
         return "Tool Data: " + System.lineSeparator()
-                + "\tType: " + tool.getType() + ", Brand: " + tool.getBrand() + ", Code: " + tool.getCode() + System.lineSeparator()
+                + "\tType: " + formattedToolName + ", Brand: " + tool.getBrand() + ", Code: " + tool.getCode() + System.lineSeparator()
                 + "Rental data: " + System.lineSeparator()
-                + "\tRental Days: " + getNumDaysRented() + ", Checkout Date: " + getCheckOutDate() + ", Return Date: " + getDueDate() + System.lineSeparator()
-                + "\tDaily Charge: " + getDailyRentalCharge() + ", Days Charged: " + getChargeDays() + System.lineSeparator()
+                + "\tRental Days: " + getNumDaysRented() + ", Checkout Date: " + dateFormat.format(getCheckOutDate()) + ", Return Date: " + dateFormat.format(getDueDate()) + System.lineSeparator()
+                + "\tDaily Charge: " + usdFormat.format(getDailyRentalCharge()) + ", Days Charged: " + getChargeDays() + System.lineSeparator()
                 + "Charge Data: " + System.lineSeparator()
-                + "\tPre Discount Total: " + getPreDiscountCharge() + ", Discount Percentage: " + getDiscountPercent() + ", Discount Amount: " + getDiscountAmount() + System.lineSeparator()
+                + "\tPre Discount Total: " + usdFormat.format(getPreDiscountCharge()) + ", Discount Percentage: " + getDiscountPercent() + "%, Discount Amount: " + usdFormat.format(getDiscountAmount()) + System.lineSeparator()
                 + "__________________________________________________________" + System.lineSeparator()
-                + "Total: " + getFinalCharge();
+                + "Total: " + usdFormat.format(getFinalCharge());
     }
 }
