@@ -30,7 +30,7 @@ See `RentalService.validateRentalRequest` for all data requirements
 A `RentalAgreement` will be returned with the following fields:
 
 ```
-    Tool tool;
+    Tool tool; // see Tool.java for definition
     int numDaysRented;
     Date checkOutDate;
     Date dueDate;
