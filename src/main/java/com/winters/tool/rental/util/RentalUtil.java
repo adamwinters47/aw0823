@@ -109,7 +109,8 @@ public final class RentalUtil {
         LocalDate start = RentalUtil.convertDateToLocalDate(firstChargeDate);
         LocalDate end = RentalUtil.convertDateToLocalDate(dueDate);
         start.datesUntil(end.plusDays(1)).forEach(day -> {
-            if (day.getDayOfWeek() == DayOfWeek.SATURDAY || day.getDayOfWeek() == DayOfWeek.SUNDAY) {
+            if (day.getDayOfWeek() == DayOfWeek.SATURDAY
+                    || day.getDayOfWeek() == DayOfWeek.SUNDAY) {
                 numWeekendDays.getAndIncrement();
             }
         });
