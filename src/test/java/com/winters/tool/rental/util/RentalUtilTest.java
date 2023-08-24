@@ -19,6 +19,26 @@ class RentalUtilTest {
     @Test
     void testCalculateNumHolidays() {
         int numHolidays = RentalUtil.calculateNumHolidays(startDate, endDate);
+        // Week of fourth of july with the Holiday on Tuesday should give us one holiday
+        assertEquals(1, numHolidays);
+    }
+
+    @Test
+    void testCalculateZeroNumHolidaysObservedOnWeekend() {
+        Date weekendHolidayStartDate = new GregorianCalendar(2021, Calendar.JULY, 3).getTime();
+        Date weekendHolidayEndDate = new GregorianCalendar(2021, Calendar.JULY, 4).getTime();
+
+        int numHolidays = RentalUtil.calculateNumHolidays(weekendHolidayStartDate, weekendHolidayEndDate);
+        // Fourth of July is on a Sunday, so the Observed day should be Monday, the 5th. We should have no holidays on the weekend here
+        assertEquals(0, numHolidays);
+    }
+
+    @Test
+    void testCalculateNumHolidaysObservedOnWeekend() {
+        Date weekendHolidayStartDate = new GregorianCalendar(2021, Calendar.JULY, 5).getTime();
+        Date weekendHolidayEndDate = new GregorianCalendar(2021, Calendar.JULY, 6).getTime();
+        int numHolidays = RentalUtil.calculateNumHolidays(weekendHolidayStartDate, weekendHolidayEndDate);
+        // Fourth of July is on a Sunday, so the Observed day should be Monday, the 5th. We should have the single one on Monday, despite the date not being the 4th
         assertEquals(1, numHolidays);
     }
 
